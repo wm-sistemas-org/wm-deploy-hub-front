@@ -7,7 +7,8 @@ import {
   LogOut, 
   Menu,
   X,
-  Package
+  Package,
+  UserCircle,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -24,6 +25,7 @@ export function DashboardLayout({ children, onLogout, userName }: DashboardLayou
   const navigation = [
     { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
     { name: "Projetos", href: "/dashboard/projects", icon: FolderIcon },
+    { name: "Minha conta", href: "/dashboard/account", icon: UserCircle },
   ];
 
   return (
@@ -44,8 +46,11 @@ export function DashboardLayout({ children, onLogout, userName }: DashboardLayou
           <div className="mt-5 h-0 flex-1 overflow-y-auto">
             <nav className="space-y-1 px-2">
               {navigation.map((item) => {
-                const isActive = location.pathname.startsWith(item.href) && 
-                                (item.href === "/dashboard" ? location.pathname === "/dashboard" : true);
+                const isActive =
+                  item.href === "/dashboard"
+                    ? location.pathname === "/dashboard"
+                    : location.pathname === item.href ||
+                      location.pathname.startsWith(item.href + "/");
                 return (
                   <Link
                     key={item.name}
@@ -77,8 +82,11 @@ export function DashboardLayout({ children, onLogout, userName }: DashboardLayou
           <div className="mt-8 flex flex-1 flex-col">
             <nav className="flex-1 space-y-1 px-3">
               {navigation.map((item) => {
-                const isActive = location.pathname.startsWith(item.href) && 
-                                (item.href === "/dashboard" ? location.pathname === "/dashboard" : true);
+                const isActive =
+                  item.href === "/dashboard"
+                    ? location.pathname === "/dashboard"
+                    : location.pathname === item.href ||
+                      location.pathname.startsWith(item.href + "/");
                 return (
                   <Link
                     key={item.name}

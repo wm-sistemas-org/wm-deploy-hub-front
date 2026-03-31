@@ -6,6 +6,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { Login } from './pages/auth/Login';
 import { Projects } from './pages/dashboard/Projects';
 import { Releases } from './pages/dashboard/Releases';
+import { AccountSecurity } from './pages/dashboard/AccountSecurity';
 import { useAuth } from './context/AuthContext';
 
 const queryClient = new QueryClient();
@@ -19,6 +20,7 @@ function Dashboard() {
         <Route path="/" element={<Navigate to="projects" replace />} />
         <Route path="projects" element={<Projects />} />
         <Route path="projects/:projectId/releases" element={<Releases />} />
+        <Route path="account" element={<AccountSecurity />} />
       </Routes>
     </DashboardLayout>
   );

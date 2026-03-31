@@ -14,7 +14,17 @@ export interface TokenResponse {
   token_type: string;
 }
 
+export interface PasswordChangeBody {
+  current_password: string;
+  new_password: string;
+}
+
 export const authApi = {
+  changePassword: async (body: PasswordChangeBody): Promise<{ detail: string }> => {
+    const response = await api.post<{ detail: string }>("/auth/password-change", body);
+    return response.data;
+  },
+
   login: async (email: string, password: string): Promise<TokenResponse> => {
     const formData = new URLSearchParams();
     formData.append("grant_type", "password");
