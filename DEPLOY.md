@@ -7,6 +7,7 @@ Mesmo fluxo do frontend do **wm-crm**: build estático com Nixpacks, sem Docker.
 | Variável | Quando usar | Descrição |
 |----------|-------------|-----------|
 | `VITE_API_URL` | Build time | URL base da API **incluindo** o prefixo (ex: `https://api.exemplo.com/api/v1`) |
+| `VITE_PUBLIC_ORG_SLUG` | Build time (opcional) | Slug da org cujo **portal de downloads** abre em `/`. Gestão de instaladores permanece em `/dashboard`. |
 | `NIXPACKS_NODE_VERSION` | Build | Versão do Node (ex: `24` ou `22`) |
 
 ## Configuração da API em runtime

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { AuthLayout } from "../../components/layout/AuthLayout";
 import { Button } from "../../components/ui/Button";
@@ -108,9 +108,14 @@ export function Login() {
             className="w-full h-11"
             isLoading={loginMutation.isPending}
           >
-            Entrar no portal
+            Entrar na gestão
           </Button>
         </div>
+        <p className="text-center text-sm text-slate-500">
+          <Link to="/" className="text-brand-600 hover:text-brand-700 font-medium">
+            Voltar ao portal de downloads
+          </Link>
+        </p>
       </form>
     </AuthLayout>
   );

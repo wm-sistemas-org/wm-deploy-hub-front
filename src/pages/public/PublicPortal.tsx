@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { publicApi } from "../../api/public";
 import { Button } from "../../components/ui/Button";
@@ -6,22 +6,37 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "../..
 import { Spinner } from "../../components/ui/Spinner";
 import { Download, Package, User } from "lucide-react";
 
-export function PublicPortal() {
-  const { orgSlug } = useParams<{ orgSlug: string }>();
+interface PublicPortalProps {
+  /** Slug da organização quando a raiz do site (/) é o portal (VITE_PUBLIC_ORG_SLUG). */
+  orgSlugOverride?: string;
+}
 
-  // Use "wm-deploy-hub" as default if empty, but route will usually enforce it.
-  const organization = orgSlug || "wm-deploy-hub";
+export function PublicPortal({ orgSlugOverride }: PublicPortalProps) {
+  const { orgSlug: paramSlug } = useParams<{ orgSlug: string }>();
+  const organization = (orgSlugOverride?.trim() || paramSlug?.trim() || "").trim();
 
   const { data: releases, isLoading, isError } = useQuery({
     queryKey: ["public", "projects", organization],
     queryFn: () => publicApi.getOrganizationReleases(organization),
-    retry: 1, // Only retry once if not found
+    enabled: organization.length > 0,
+    retry: 1,
   });
 
   const handleDownload = (org: string, proj: string) => {
     const url = publicApi.getDownloadUrl(org, proj);
     window.location.href = url;
   };
+
+  if (!organization) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4">
+        <p className="text-slate-600 text-center">Organização inválida ou não informada.</p>
+        <Button asChild className="mt-4">
+          <Link to="/">Voltar ao início</Link>
+        </Button>
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -49,11 +64,16 @@ export function PublicPortal() {
             <div className="flex items-center gap-2">
               <Package className="h-8 w-8 text-brand-600" />
               <span className="font-bold text-xl text-slate-800 tracking-tight uppercase">
-                {organization.replace('-', ' ')}
+                {organization.replace(/-/g, " ")}
               </span>
             </div>
-            <div className="text-sm font-medium text-slate-500">
-              Portal de Downloads
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium text-slate-500 hidden sm:inline">
+                Portal de Downloads
+              </span>
+              <Button variant="ghost" size="sm" className="text-slate-600" asChild>
+                <Link to="/login">Área da equipe</Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -84,7 +104,7 @@ export function PublicPortal() {
                 <CardHeader className="bg-white border-b border-slate-100 flex-1">
                   <div className="flex items-start justify-between">
                     <div>
-                        <CardTitle className="text-xl capitalize text-slate-800">{release.project.replace('-', ' ')}</CardTitle>
+                        <CardTitle className="text-xl capitalize text-slate-800">{release.project.replace(/-/g, " ")}</CardTitle>
                         <CardDescription className="font-mono text-xs mt-1 px-2 py-0.5 bg-brand-50 text-brand-700 rounded-full inline-block font-semibold">
                         v{release.version}
                         </CardDescription>
