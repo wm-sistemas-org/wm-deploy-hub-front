@@ -17,11 +17,12 @@ export interface TokenResponse {
 export const authApi = {
   login: async (email: string, password: string): Promise<TokenResponse> => {
     const formData = new URLSearchParams();
-    formData.append("username", email); // OAuth2 expects 'username' field
+    formData.append("grant_type", "password");
+    formData.append("username", email);
     formData.append("password", password);
-    
-    const response = await api.post<TokenResponse>("/auth/login", formData, {
-      headers: { "Content-Type": "application/x-www-form-urlencoded" }
+
+    const response = await api.post<TokenResponse>("/auth/login", formData.toString(), {
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
     });
     return response.data;
   },

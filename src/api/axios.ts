@@ -11,9 +11,6 @@ function getApiBaseUrl(): string {
 
 export const api = axios.create({
   baseURL: getApiBaseUrl(),
-  headers: {
-    'Content-Type': 'application/json',
-  },
 });
 
 /** Atualiza a baseURL em runtime (útil após carregar config.json) */
@@ -22,8 +19,10 @@ export function setApiBaseUrl(url: string): void {
 }
 
 api.interceptors.request.use((config) => {
+  const path = `${config.baseURL ?? ''}${config.url ?? ''}`;
+  const isLogin = path.includes('/auth/login');
   const token = localStorage.getItem('token');
-  if (token && config.headers) {
+  if (token && config.headers && !isLogin) {
     config.headers.Authorization = `Bearer ${token}`;
   }
   return config;

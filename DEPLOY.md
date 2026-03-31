@@ -11,9 +11,9 @@ Mesmo fluxo do frontend do **wm-crm**: build estático com Nixpacks, sem Docker.
 
 ## Configuração da API em runtime
 
-O app carrega `/config.json` ao iniciar. Se existir, substitui a URL (útil para mudar API sem novo build).
+O app carrega `/config.json` ao iniciar. **Só altera a URL da API se o JSON tiver `VITE_API_URL` preenchido** (string não vazia). O repositório usa `{}` para desenvolvimento: vale o `VITE_API_URL` do `.env` / build.
 
-**Edite `public/config.json` antes do build**, ou **substitua o arquivo em `dist/`** após o deploy (no mesmo diretório público do servidor):
+**Em produção**, edite antes do build ou **substitua só o `config.json` no servidor** após o deploy:
 
 ```json
 {

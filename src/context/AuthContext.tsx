@@ -28,7 +28,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           setToken(storedToken);
         } catch (error) {
           console.error("Failed to authenticate with token", error);
-          logout();
+          // Não limpar sessão se o token mudou (ex.: login concluiu enquanto getMe antigo ainda rodava)
+          if (localStorage.getItem("token") === storedToken) {
+            logout();
+          }
         }
       }
       setIsLoading(false);
