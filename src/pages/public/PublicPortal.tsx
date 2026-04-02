@@ -7,7 +7,7 @@ import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Input } from "../../components/ui/Input";
 import { Spinner } from "../../components/ui/Spinner";
-import { Calendar, Download, HardDrive, Package, Search, Tag, User } from "lucide-react";
+import { Calendar, Copy, Download, HardDrive, Package, Search, Tag, User } from "lucide-react";
 
 function formatBytes(bytes: number): string {
   if (!bytes || bytes === 0) return "—";
@@ -35,6 +35,18 @@ export function PublicPortal({ orgSlugOverride }: PublicPortalProps) {
 
   const [search, setSearch] = useState("");
   const [responsibleFilter, setResponsibleFilter] = useState("");
+  const [copyDone, setCopyDone] = useState(false);
+
+  const copyPortalLink = async () => {
+    const url = `${window.location.origin}${window.location.pathname}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopyDone(true);
+      window.setTimeout(() => setCopyDone(false), 2000);
+    } catch {
+      setCopyDone(false);
+    }
+  };
 
   const developers = useMemo(() => {
     const list = releases ?? [];
@@ -106,10 +118,21 @@ export function PublicPortal({ orgSlugOverride }: PublicPortalProps) {
                 {organization.replace(/-/g, " ")}
               </span>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 sm:gap-4">
               <span className="text-sm font-medium text-slate-500 hidden sm:inline">
                 Portal de Downloads
               </span>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="gap-1.5 text-slate-700 border-slate-200"
+                onClick={() => void copyPortalLink()}
+              >
+                <Copy className="h-4 w-4 shrink-0" />
+                <span className="hidden sm:inline">{copyDone ? "Copiado!" : "Copiar link"}</span>
+                <span className="sm:hidden">{copyDone ? "Ok!" : "Copiar"}</span>
+              </Button>
               <Button variant="ghost" size="sm" className="text-slate-600" asChild>
                 <Link to="/login">Área da equipe</Link>
               </Button>

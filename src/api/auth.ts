@@ -7,6 +7,8 @@ export interface User {
   email: string;
   role: string;
   is_active: boolean;
+  /** Slug da organização no portal público; preenchido por GET /auth/me. */
+  organization_slug?: string | null;
 }
 
 export interface TokenResponse {

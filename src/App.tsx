@@ -10,14 +10,23 @@ import { AccountSecurity } from './pages/dashboard/AccountSecurity';
 import { PublicPortal } from './pages/public/PublicPortal';
 import { PublicRoot } from './pages/public/PublicRoot';
 import { LegacyPublicRedirect } from './pages/public/LegacyPublicRedirect';
+import { publicPortalPathForOrgSlug } from './lib/portalPath';
 
 const queryClient = new QueryClient();
 
 // Dashboard wrapper to provide layout
 function Dashboard() {
   const { logout, user } = useAuth();
+  const publicPortalPath =
+    user?.organization_slug?.trim()
+      ? publicPortalPathForOrgSlug(user.organization_slug.trim())
+      : null;
   return (
-    <DashboardLayout onLogout={logout} userName={user?.name || "User"}>
+    <DashboardLayout
+      onLogout={logout}
+      userName={user?.name || "User"}
+      publicPortalPath={publicPortalPath}
+    >
       <Routes>
         <Route path="/" element={<Navigate to="projects" replace />} />
         <Route path="projects" element={<Projects />} />

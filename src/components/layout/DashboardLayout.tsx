@@ -1,14 +1,15 @@
 import { useState } from "react";
 import type { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { 
-  LayoutDashboard, 
-  FolderIcon, 
-  LogOut, 
+import {
+  LayoutDashboard,
+  FolderIcon,
+  LogOut,
   Menu,
   X,
   Package,
   UserCircle,
+  Download,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -16,9 +17,11 @@ interface DashboardLayoutProps {
   children: ReactNode;
   onLogout: () => void;
   userName: string;
+  /** Rota do portal público de downloads, ex.: `/minha-org` ou `/` quando bate com VITE_PUBLIC_ORG_SLUG. */
+  publicPortalPath?: string | null;
 }
 
-export function DashboardLayout({ children, onLogout, userName }: DashboardLayoutProps) {
+export function DashboardLayout({ children, onLogout, userName, publicPortalPath }: DashboardLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const location = useLocation();
 
@@ -67,6 +70,18 @@ export function DashboardLayout({ children, onLogout, userName }: DashboardLayou
               })}
             </nav>
           </div>
+          {publicPortalPath && (
+            <div className="border-t border-slate-200 px-3 py-3">
+              <Link
+                to={publicPortalPath}
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50"
+              >
+                <Download className="h-5 w-5 shrink-0" />
+                Portal de downloads
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
@@ -103,16 +118,25 @@ export function DashboardLayout({ children, onLogout, userName }: DashboardLayou
               })}
             </nav>
           </div>
-          <div className="flex flex-shrink-0 border-t border-slate-200 p-4">
+          <div className="flex flex-shrink-0 flex-col border-t border-slate-200 p-4 gap-2">
+            {publicPortalPath && (
+              <Link
+                to={publicPortalPath}
+                className="flex items-center gap-2 rounded-md px-2 py-2 text-sm font-medium text-brand-700 hover:bg-brand-50"
+              >
+                <Download className="h-4 w-4 shrink-0" />
+                Portal de downloads
+              </Link>
+            )}
             <div className="group block w-full flex-shrink-0">
               <div className="flex items-center">
                 <div className="inline-block h-9 w-9 rounded-full bg-slate-200 flex items-center justify-center text-slate-600 font-semibold uppercase">
-                   {userName.charAt(0)}
+                  {userName.charAt(0)}
                 </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-slate-700">{userName}</p>
+                <div className="ml-3 min-w-0 flex-1">
+                  <p className="text-sm font-medium text-slate-700 truncate">{userName}</p>
                 </div>
-                <button onClick={onLogout} className="ml-auto text-slate-400 hover:text-red-500 transition-colors">
+                <button type="button" onClick={onLogout} className="ml-auto shrink-0 text-slate-400 hover:text-red-500 transition-colors" aria-label="Sair">
                   <LogOut className="h-5 w-5" />
                 </button>
               </div>
