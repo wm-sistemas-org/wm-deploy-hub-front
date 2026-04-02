@@ -7,7 +7,7 @@ import { Button } from "../../components/ui/Button";
 import { Card } from "../../components/ui/Card";
 import { Input } from "../../components/ui/Input";
 import { Spinner } from "../../components/ui/Spinner";
-import { Calendar, Copy, Download, HardDrive, Package, Search, Tag, User } from "lucide-react";
+import { Calendar, Check, Copy, Download, HardDrive, Package, Search, Tag, User } from "lucide-react";
 
 function formatBytes(bytes: number): string {
   if (!bytes || bytes === 0) return "—";
@@ -35,16 +35,20 @@ export function PublicPortal({ orgSlugOverride }: PublicPortalProps) {
 
   const [search, setSearch] = useState("");
   const [responsibleFilter, setResponsibleFilter] = useState("");
-  const [copyDone, setCopyDone] = useState(false);
+  /** Projeto cujo link de download acabou de ser copiado (feedback só no ícone). */
+  const [copiedProject, setCopiedProject] = useState<string | null>(null);
 
-  const copyPortalLink = async () => {
-    const url = `${window.location.origin}${window.location.pathname}`;
+  const copyInstallDownloadLink = async (org: string, projectSlug: string) => {
+    const raw = publicApi.getDownloadUrl(org, projectSlug);
+    const absolute = /^https?:\/\//i.test(raw)
+      ? raw
+      : new URL(raw, window.location.origin).href;
     try {
-      await navigator.clipboard.writeText(url);
-      setCopyDone(true);
-      window.setTimeout(() => setCopyDone(false), 2000);
+      await navigator.clipboard.writeText(absolute);
+      setCopiedProject(projectSlug);
+      window.setTimeout(() => setCopiedProject((p) => (p === projectSlug ? null : p)), 2000);
     } catch {
-      setCopyDone(false);
+      setCopiedProject(null);
     }
   };
 
@@ -118,21 +122,10 @@ export function PublicPortal({ orgSlugOverride }: PublicPortalProps) {
                 {organization.replace(/-/g, " ")}
               </span>
             </div>
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-4">
               <span className="text-sm font-medium text-slate-500 hidden sm:inline">
                 Portal de Downloads
               </span>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                className="gap-1.5 text-slate-700 border-slate-200"
-                onClick={() => void copyPortalLink()}
-              >
-                <Copy className="h-4 w-4 shrink-0" />
-                <span className="hidden sm:inline">{copyDone ? "Copiado!" : "Copiar link"}</span>
-                <span className="sm:hidden">{copyDone ? "Ok!" : "Copiar"}</span>
-              </Button>
               <Button variant="ghost" size="sm" className="text-slate-600" asChild>
                 <Link to="/login">Área da equipe</Link>
               </Button>
@@ -334,13 +327,28 @@ export function PublicPortal({ orgSlugOverride }: PublicPortalProps) {
                         </div>
                       </div>
 
-                      <div className="border-t border-slate-100 bg-slate-50/90 p-3">
+                      <div className="border-t border-slate-100 bg-slate-50/90 p-3 flex gap-2">
                         <Button
-                          className="h-10 w-full gap-2 text-sm font-semibold shadow-sm transition-transform active:scale-[0.98]"
+                          className="h-10 min-w-0 flex-1 gap-2 text-sm font-semibold shadow-sm transition-transform active:scale-[0.98]"
                           onClick={() => handleDownload(release.organization, release.project)}
                         >
-                          <Download className="h-4 w-4" />
+                          <Download className="h-4 w-4 shrink-0" />
                           Baixar instalador
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="icon"
+                          className="h-10 w-10 shrink-0 border-slate-200 text-slate-600 hover:text-slate-900"
+                          title="Copiar link do instalador"
+                          aria-label="Copiar link do instalador"
+                          onClick={() => void copyInstallDownloadLink(release.organization, release.project)}
+                        >
+                          {copiedProject === release.project ? (
+                            <Check className="h-4 w-4 text-brand-600" aria-hidden />
+                          ) : (
+                            <Copy className="h-4 w-4" aria-hidden />
+                          )}
                         </Button>
                       </div>
                     </Card>
